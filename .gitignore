@@ -1,0 +1,21 @@
+# Build output
+bin/
+obj/
+
+# NuGet (old projects)
+packages/
+**/packages/*
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# Logs
+*.log
