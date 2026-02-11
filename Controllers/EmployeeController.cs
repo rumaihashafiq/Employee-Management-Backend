@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using EmployeeManagement.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using EmployeeManagement.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using EmployeeManagement.Data;
 namespace EmployeeManagement.Controllers
 {
     [ApiController]
@@ -9,12 +11,13 @@ namespace EmployeeManagement.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService employeeService;
+        private readonly EmployeeManagementDbContext dbContext;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, EmployeeManagementDbContext context)
         {
             this.employeeService = employeeService;
+            this.dbContext = context;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -23,19 +26,19 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById([FromRoute]Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var employee = await employeeService.GetByIdAsync(id);
             if (employee == null)
-            {  
-                return NotFound();    
-            } 
+            {
+                return NotFound();
+            }
 
             return Ok(employee);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]AddEmployeeRequestDto dto)
+        public async Task<IActionResult> Create([FromBody] AddEmployeeRequestDto dto)
         {
             var employee = await employeeService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
@@ -47,25 +50,46 @@ namespace EmployeeManagement.Controllers
             var employee = await employeeService.UpdateAsync(id, dto);
             if (employee == null)
             {
-                 return NotFound();
+                return NotFound();
             }
-            
+
             return Ok(employee);
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete([FromRoute]Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var deleted = await employeeService.DeleteAsync(id);
-            if (!deleted) 
+            if (!deleted)
             {
                 return NotFound();
             }
-           else
+            else
             {
-                  return NoContent();
+                return NoContent();
             }
-          
+
         }
+
+        [HttpGet("dashboard")]
+        public async Task<object> GetDashboardDataAsync(Guid userId, bool isAdmin)
+        {
+            if (isAdmin)
+                return await dbContext.Employees.ToListAsync();
+
+#pragma warning disable CS8603 // Possible null reference return.
+            return await dbContext.Employees
+        .Where(e => e.Id == userId)
+        .Select(e => new
+        {
+            e.Id,
+            e.Name,
+            e.Email,
+            e.Department
+        })
+        .FirstOrDefaultAsync();
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
     }
 }
