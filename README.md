@@ -5,7 +5,12 @@
 ## Objective
 Build a clean CRUD-based **ASP.NET Core Web API** using **Entity Framework Core**.
 
----
+##Recent Changes:
+modified code by making employee's relationship with project
+Added Project Table (id,name,description, start date, end date,duration.
+implemented jwt authentication.
+Integrated backend with frontend.
+I still need to add more features.
 
 ## Functional Requirements
 
