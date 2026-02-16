@@ -10,7 +10,7 @@ modified code by making employee's relationship with project
 Added Project Table (id,name,description, start date, end date,duration.
 implemented jwt authentication.
 Integrated backend with frontend.
-I still need to add more features.
+Role based auth
 
 ## Functional Requirements
 
