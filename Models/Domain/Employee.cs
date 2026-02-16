@@ -17,7 +17,7 @@ namespace EmployeeManagement.Models.Domain
 
         public DateTime DateOfJoining { get; set; } = DateTime.UtcNow;
 
-
+       public bool  IsActive { get; set; }=false;
 
          public ICollection<Project> Projects { get; set; } = new List<Project>();
     }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using EmployeeManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using EmployeeManagement.Data;
+using System.Security.Claims;
+using EmployeeManagement.Models.Domain;
 namespace EmployeeManagement.Controllers
 {
     [ApiController]
@@ -18,6 +20,24 @@ namespace EmployeeManagement.Controllers
             this.employeeService = employeeService;
             this.dbContext = context;
         }
+
+[HttpGet("MyProfile")]
+[Authorize]
+public async Task<ActionResult<Employee>> GetMyProfile()
+{
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (!Guid.TryParse(userIdString, out Guid userId))
+    {
+        return BadRequest("Invalid user ID");
+    }
+
+    var employee = await dbContext.Employees.FirstOrDefaultAsync(e => e.Id == userId);
+
+    if (employee == null) return NotFound();
+
+    return Ok(employee);
+}
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

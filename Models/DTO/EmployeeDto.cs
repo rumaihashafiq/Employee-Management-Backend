@@ -9,5 +9,6 @@ namespace EmployeeManagement.Models.DTO
 public required string Password { get; set; }
     public required string Department { get; set; }
     public DateTime DateOfJoining { get; set; }=DateTime.Now;
+public bool IsActive { get; set; }
 }
 }
